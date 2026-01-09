@@ -1,0 +1,42 @@
+name: IndexNow Submission
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  submit-to-indexnow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Submit URLs to IndexNow
+        run: |
+          INDEXNOW_KEY="6890acafce394f5da600c722f1e8b681"
+          HOST="sinistar26.github.io"
+          BASE_URL="https://sinistar26.github.io/Dark-Ender"
+          
+          # Submit root and main pages
+          URLS=(
+            "https://sinistar26.github.io/Dark-Ender/"
+            "https://sinistar26.github.io/Dark-Ender/index.html"
+          )
+          
+          for URL in "${URLS[@]}"; do
+            echo "Submitting $URL to IndexNow..."
+            curl -X POST https://api.indexnow.org/indexnow \
+              -H "Content-Type: application/json; charset=utf-8" \
+              -d "{
+                \"host\": \"$HOST\",
+                \"key\": \"$INDEXNOW_KEY\",
+                \"keyLocation\": \"https://$HOST/Dark-Ender/$INDEXNOW_KEY.txt\",
+                \"urlList\": [\"$URL\"]
+              }"
+            echo ""
+            sleep 1
+          done
+          
+          echo "IndexNow submission completed"
